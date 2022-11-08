@@ -1,9 +1,20 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import storage from "../chrome/storage";
 import { Shortcut } from "../types";
 import Button from "./common/Button";
 import ShortcutItem from "./ShortcutItem";
 
-const Shortcuts: React.FC<{ shortcuts: Shortcut[] }> = ({ shortcuts }) => {
+const Shortcuts: React.FC<{}> = () => {
+  const [shortcuts, setShortcuts] = useState<Shortcut[]>([]);
+  useEffect(() => {
+    storage
+      .getShortcuts()
+      .then(setShortcuts)
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
   return (
     <div className="px-4">
       <div className="flex items-center justify-between py-4">

@@ -1,25 +1,38 @@
-import { useEffect, useState } from "react";
-import storage from "./chrome/storage";
-import Navbar from "./components/Navbar";
 import Shortcuts from "./components/Shortcuts";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  createMemoryRouter,
+} from "react-router-dom";
+import { ROUTES } from "./constants";
+import ErrorScreen from "./components/ErrorScreen";
 import "./index.css";
-import { Shortcut } from "./types";
+import Root from "./components/Layout/Root";
+import NewShortcut from "./components/NewShortcut";
+
+const router = createMemoryRouter([
+  {
+    path: ROUTES.ROOT,
+    element: <Root />,
+    errorElement: <ErrorScreen />,
+    children: [
+      {
+        path: ROUTES.ROOT,
+        element: <Shortcuts />,
+      },
+      {
+        path: ROUTES.NEW_SHORTCUT,
+        element: <NewShortcut />,
+      },
+    ],
+  },
+]);
 
 function App() {
-  const [shortcuts, setShortcuts] = useState<Shortcut[]>([]);
-  useEffect(() => {
-    storage
-      .getShortcuts()
-      .then(setShortcuts)
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
-
+  console.log(window.location);
   return (
     <div>
-      <Navbar />
-      <Shortcuts shortcuts={shortcuts} />
+      <RouterProvider router={router} />{" "}
     </div>
   );
 }

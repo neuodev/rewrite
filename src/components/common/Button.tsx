@@ -9,9 +9,9 @@ const Button: React.FC<{
     <button
       className={`px-3 py-1.5 rounded-md uppercase flex items-center justify-center ${
         isPrimary
-          ? "bg-indigo-500 text-white hover:bg-indigo-400"
+          ? "bg-indigo-500 text-white hover:bg-indigo-600"
           : "bg-transparent border border-gray-500 text-gray-900 hover:bg-gray-100"
-      } transition-colors duration-200 ease-in`}
+      } transition-colors duration-300 ease-in`}
     >
       {children}
     </button>
