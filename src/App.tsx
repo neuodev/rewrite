@@ -1,12 +1,25 @@
+import { useEffect, useState } from "react";
+import storage from "./chrome/storage";
 import Navbar from "./components/Navbar";
-import NewShortcutForm from "./components/NewShortcutForm";
+import Shortcuts from "./components/Shortcuts";
 import "./index.css";
+import { Shortcut } from "./types";
 
 function App() {
+  const [shortcuts, setShortcuts] = useState<Shortcut[]>([]);
+  useEffect(() => {
+    storage
+      .getShortcuts()
+      .then(setShortcuts)
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
   return (
     <div>
       <Navbar />
-      <NewShortcutForm />
+      <Shortcuts shortcuts={shortcuts} />
     </div>
   );
 }
