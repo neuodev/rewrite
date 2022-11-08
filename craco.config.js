@@ -9,7 +9,8 @@ module.exports = {
               require.resolve("react-dev-utils/webpackHotDevClient"),
             paths.appIndexJs,
           ].filter(Boolean),
-          content: "./src/chrome/inject.ts",
+          inject: "./src/chrome/inject.ts",
+          background: "./src/chrome/background.ts",
         },
         output: {
           ...webpackConfig.output,

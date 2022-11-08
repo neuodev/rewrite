@@ -1,13 +1,18 @@
-// Todo: Remove it
-export type GetDOMResponse = {
-  title: string;
-  headlines: string[];
-};
+export enum MessageType {
+  GetShortcuts = "get-shortcuts-list",
+  ShortcutsRes = "get-shortcuts-response",
+}
 
-// Todo: Remove it
-export type DOMMessage = {
-  type: "GET_DOM";
-};
+export type Message =
+  | {
+      type: MessageType.GetShortcuts;
+    }
+  | {
+      type: MessageType.ShortcutsRes;
+      shortcuts: Array<Shortcut>;
+    };
+
+export type ExtensionRes = Shortcut[] | {};
 
 export type Shortcut = {
   key: string;

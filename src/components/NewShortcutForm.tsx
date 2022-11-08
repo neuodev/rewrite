@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import storage from "../chrome/storage";
 import { StorageKeys } from "../constants";
 import { Prefix, Shortcut } from "../types";
 
@@ -12,24 +13,18 @@ const NewShortcutForm = () => {
     e.preventDefault();
     if (!key || !value) return;
     setLoading(true);
-    const res = (await chrome.storage.sync.get(StorageKeys.shortcuts)) as {
-      [StorageKeys.shortcuts]: Array<Shortcut>;
-    };
-    const allShortcuts = res[StorageKeys.shortcuts] || [];
-    allShortcuts.push({ value, key, prefix: Prefix.Slash });
-    // todo: Read/write should be move to its own utils
-    await chrome.storage.sync.set({
-      [StorageKeys.shortcuts]: allShortcuts,
+    storage.newShortcut({
+      key,
+      value,
+      prefix: Prefix.Slash,
     });
-
     setKey("");
     setValue("");
     setLoading(false);
   }
 
   useEffect(() => {
-    chrome.storage.sync.get(StorageKeys.shortcuts, (result) => {
-      const shortcuts = result[StorageKeys.shortcuts] || [];
+    storage.getShortcuts().then((shortcuts) => {
       setShortcuts(shortcuts);
     });
   }, [loading]);

@@ -13,10 +13,13 @@
     "128": "logo192.png"
   },
   "permissions": ["storage", "activeTab"],
+  "background": {
+    "service_worker": "./static/js/background.js"
+  },
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*"],
-      "js": ["./static/js/content.js"]
+      "js": ["./static/js/inject.js"]
     }
   ]
 }
