@@ -1,26 +1,21 @@
 import React from "react";
 import { Shortcut } from "../types";
+import Button from "./common/Button";
+import ShortcutItem from "./ShortcutItem";
 
 const Shortcuts: React.FC<{ shortcuts: Shortcut[] }> = ({ shortcuts }) => {
   return (
-    <div>
-      <div>
-        <h1>Shortcuts</h1>
-        <button>New</button>
+    <div className="px-4">
+      <div className="flex items-center justify-between py-4">
+        <h1 className="text-xl capitalize font-bold text-gray-800">
+          Shortcuts
+        </h1>
+        <Button variant="primary">New</Button>
       </div>
 
       <ul>
-        {shortcuts.map(({ prefix, key, value }) => (
-          <li
-            className="flex items-center justify-between mb-4"
-            key={prefix + key}
-          >
-            <p>
-              {prefix}
-              {key}
-            </p>
-            <p>{value}</p>
-          </li>
+        {shortcuts.map((s) => (
+          <ShortcutItem key={s.key + s.prefix} shortcut={s} />
         ))}
       </ul>
     </div>
