@@ -1,11 +1,11 @@
 {
-  "name": "Fiber",
+  "name": "Rewrite",
   "description": "You don't have to type it twice!",
   "version": "1.0",
   "manifest_version": 3,
   "action": {
     "default_popup": "index.html",
-    "default_title": "Open fiber"
+    "default_title": "Open extension"
   },
   "icons": {
     "16": "logo192.png",

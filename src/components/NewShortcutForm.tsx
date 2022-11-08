@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import storage from "../chrome/storage";
-import { StorageKeys } from "../constants";
 import { Prefix, Shortcut } from "../types";
 
 const NewShortcutForm = () => {
@@ -13,7 +12,7 @@ const NewShortcutForm = () => {
     e.preventDefault();
     if (!key || !value) return;
     setLoading(true);
-    storage.newShortcut({
+    await storage.newShortcut({
       key,
       value,
       prefix: Prefix.Slash,
