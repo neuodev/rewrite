@@ -2,14 +2,14 @@ import React from "react";
 import { Shortcut } from "../types";
 
 const ShortcutItem: React.FC<{ shortcut: Shortcut }> = ({ shortcut }) => {
-  const { prefix, key, value } = shortcut;
+  const { prefix, command, text } = shortcut;
   return (
     <div className="flex items-center justify-between mb-4">
       <p>
         {prefix}
-        {key}
+        {command}
       </p>
-      <p>{value}</p>
+      <p>{text}</p>
     </div>
   );
 };

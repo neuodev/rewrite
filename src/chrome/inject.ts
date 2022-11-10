@@ -18,12 +18,12 @@ inputs.forEach(onChange);
 type InputElement = HTMLInputElement | HTMLTextAreaElement;
 function onChange(el: InputElement) {
   el.addEventListener("input", (e) => {
-    let text = (e.target as InputElement).value;
-    shortcuts.forEach(({ prefix, key, value }) => {
-      const keyword = `${prefix}${key} `;
+    let value = (e.target as InputElement).value;
+    shortcuts.forEach(({ prefix, command, text }) => {
+      const keyword = `${prefix}${command} `;
       let regexp = new RegExp(keyword, "g");
-      if (regexp.test(text)) {
-        el.value = text.replace(keyword, value + " ");
+      if (regexp.test(value)) {
+        el.value = value.replace(keyword, text + " ");
       }
     });
   });

@@ -1,58 +1,64 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import storage from "../chrome/storage";
 import { Prefix, Shortcut } from "../types";
-import Button from "./common/Button";
-import Input from "./common/Input";
+import TextField from "./common/TextField";
 
+const defaultState = {
+  command: "",
+  text: "",
+  prefix: Prefix.Slash,
+};
 const NewShortcutForm = () => {
-  const [state, setState] = useState<{
-    key: string;
-    value: string;
-    prefix: Prefix;
-  }>({
-    key: "",
-    value: "",
-    prefix: Prefix.Slash,
+  const [state, setState] = useState<Shortcut>({
+    ...defaultState,
   });
-
-  const [key, setKey] = useState("");
-  const [value, setValue] = useState("");
   const [loading, setLoading] = useState<boolean>(false);
+  const [duplicatedKeyErr, setDuplicatedKeyErr] = useState<boolean>(false);
+
+  function updateState(
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) {
+    let name = e.target.name;
+    let value = e.target.value;
+    setState({ ...state, [name]: value });
+  }
 
   async function newShortcut() {
-    if (!key || !value) return;
-    setLoading(true);
-    await storage.newShortcut({
-      key,
-      value,
-      prefix: Prefix.Slash,
-    });
-    setKey("");
-    setValue("");
-    setLoading(false);
+    if (!state.command || !state.text) return;
+
+    try {
+      setLoading(true);
+      await storage.newShortcut(state);
+      setState({ ...defaultState });
+      setLoading(false);
+    } catch (error) {
+      alert("error!");
+    }
   }
 
   return (
     <div className="py-8 px-4">
       <form onSubmit={(e) => e.preventDefault()}>
         <div className="mb-4">
-          <Input
+          <TextField
             label="Shortcut"
             placeholder="Type your shortcut eg: email"
             helperText="Make it short."
             as="input"
-            onChange={setKey}
-            value={key}
+            name="command"
+            onChange={updateState}
+            value={state.command}
           />
         </div>
 
-        <Input
-          label="Value"
+        <TextField
+          label="Text"
           placeholder="What you want to store..."
           helperText=""
+          name="text"
           as="textarea"
-          onChange={setValue}
-          value={key}
+          onChange={updateState}
+          value={state.text}
         />
         <div className="mt-4">
           <button className="btn-primary text-sm" onClick={newShortcut}>

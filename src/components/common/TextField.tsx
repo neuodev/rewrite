@@ -1,22 +1,23 @@
 import React from "react";
 
-const Input: React.FC<{
+const TextField: React.FC<{
   placeholder?: string;
   label: string;
   helperText?: string;
+  name?: string;
   error?: boolean;
   value?: string;
-  onChange?(val: string): void;
+  onChange?(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void;
   as: "input" | "textarea";
-}> = ({ placeholder, helperText, error, label, as, value, onChange }) => {
+}> = ({ placeholder, helperText, name, error, label, as, value, onChange }) => {
   const props = {
     className:
       "rounded-md placeholder:text-gray-400 font-medium w-full focus:outline-none focus:ring-2 focus:ring-indigo-300 py-2 px-3 bg-gray-200",
     type: "text",
     placeholder,
     value,
-    onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-      onChange && onChange(e.target.value),
+    onChange,
+    name,
   };
 
   return (
@@ -32,8 +33,8 @@ const Input: React.FC<{
   );
 };
 
-export default Input;
+export default TextField;
 
-Input.defaultProps = {
+TextField.defaultProps = {
   error: false,
 };

@@ -29,7 +29,7 @@ const Shortcuts: React.FC<{}> = () => {
 
       <ul>
         {shortcuts.map((s) => (
-          <ShortcutItem key={s.key + s.prefix} shortcut={s} />
+          <ShortcutItem key={s.prefix + s.command} shortcut={s} />
         ))}
       </ul>
     </div>
