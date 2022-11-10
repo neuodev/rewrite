@@ -1,21 +1,35 @@
+import { Button, TextField, CircularProgress } from "@mui/material";
+import { Stack } from "@mui/system";
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import storage from "../chrome/storage";
+import { ROUTES } from "../constants";
 import { Prefix, Shortcut } from "../types";
-import TextField from "./common/TextField";
 
-const defaultState = {
+type State = Shortcut & {
+  enabled: boolean;
+  isDuplicated: boolean;
+  unableToCreate: boolean;
+  loading: boolean;
+};
+
+const defaultState: State = {
   command: "",
   text: "",
   prefix: Prefix.Slash,
+  enabled: true,
+  isDuplicated: false,
+  unableToCreate: false,
+  loading: false,
 };
+
 const NewShortcutForm = () => {
-  const [state, setState] = useState<Shortcut>({
+  const navigate = useNavigate();
+  const [state, setState] = useState<State>({
     ...defaultState,
   });
-  const [loading, setLoading] = useState<boolean>(false);
-  const [duplicatedKeyErr, setDuplicatedKeyErr] = useState<boolean>(false);
 
-  function updateState(
+  function updateFormFields(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) {
     let name = e.target.name;
@@ -26,14 +40,20 @@ const NewShortcutForm = () => {
   async function newShortcut() {
     if (!state.command || !state.text) return;
 
+    setState({ ...state, loading: true });
     try {
-      setLoading(true);
-      await storage.newShortcut(state);
-      setState({ ...defaultState });
-      setLoading(false);
+      const isExist = await storage.isExist(state.prefix, state.command);
+      console.log({ isExist });
+      if (isExist) {
+        setState({ ...state, isDuplicated: true });
+      } else {
+        await storage.newShortcut(state);
+        setState({ ...defaultState });
+      }
     } catch (error) {
       alert("error!");
     }
+    setState({ ...state, loading: false });
   }
 
   return (
@@ -43,28 +63,53 @@ const NewShortcutForm = () => {
           <TextField
             label="Shortcut"
             placeholder="Type your shortcut eg: email"
-            helperText="Make it short."
-            as="input"
+            helperText={
+              state.isDuplicated
+                ? "Shortcut already exist"
+                : "Make it memorable"
+            }
+            error={state.isDuplicated}
             name="command"
-            onChange={updateState}
+            onChange={updateFormFields}
             value={state.command}
+            sx={{ width: "100%" }}
           />
         </div>
 
-        <TextField
-          label="Text"
-          placeholder="What you want to store..."
-          helperText=""
-          name="text"
-          as="textarea"
-          onChange={updateState}
-          value={state.text}
-        />
-        <div className="mt-4">
-          <button className="btn-primary text-sm" onClick={newShortcut}>
-            Create
-          </button>
+        <div>
+          <TextField
+            label="Text"
+            placeholder="What you want to rewrite..."
+            name="text"
+            onChange={updateFormFields}
+            value={state.text}
+            sx={{ width: "100%" }}
+            rows={10}
+            multiline
+          />
         </div>
+        <Stack direction="row" spacing={2} sx={{ mt: "16px" }}>
+          <Button
+            onClick={() => navigate(ROUTES.ROOT)}
+            variant="outlined"
+            color="primary"
+            fullWidth
+            size="large"
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            type="submit"
+            fullWidth
+            onClick={newShortcut}
+            disabled={!state.command || !state.text || state.loading}
+            size="large"
+          >
+            {state.loading ? <CircularProgress size={20} /> : "Create"}
+          </Button>
+        </Stack>
       </form>
     </div>
   );

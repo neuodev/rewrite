@@ -1,6 +1,7 @@
+import { Button } from "@mui/material";
 import React from "react";
 import { useNavigate, useRouteError } from "react-router-dom";
-import Button from "./common/Button";
+import { ROUTES } from "../constants";
 
 const ErrorScreen = () => {
   const error = useRouteError() as { statusText?: string; message: string };
@@ -9,7 +10,9 @@ const ErrorScreen = () => {
     <div className="flex flex-col items-center justify-center h-full">
       <p>Sorry, an unexpected error has occurred</p>
       <p>{error.statusText || error.message}</p>
-      <Button variant="primary">Go Home</Button>
+      <Button variant="contained" onClick={() => navigate(ROUTES.ROOT)}>
+        Go Home
+      </Button>
     </div>
   );
 };

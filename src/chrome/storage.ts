@@ -1,5 +1,5 @@
 import { StorageKeys } from "../constants";
-import { Shortcut } from "../types";
+import { Prefix, Shortcut } from "../types";
 
 class Storage {
   async getShortcuts(): Promise<Array<Shortcut>> {
@@ -15,6 +15,11 @@ class Storage {
     await chrome.storage.sync.set({
       [StorageKeys.shortcuts]: shortcuts,
     });
+  }
+
+  async isExist(prefix: Prefix, command: string): Promise<boolean> {
+    const shortcuts = await this.getShortcuts();
+    return shortcuts.some((s) => s.command === command && s.prefix === prefix);
   }
 }
 
