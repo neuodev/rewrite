@@ -18,6 +18,7 @@ export type Shortcut = {
   command: string;
   text: string;
   prefix: Prefix;
+  enabled: boolean;
 };
 
 export enum Prefix {

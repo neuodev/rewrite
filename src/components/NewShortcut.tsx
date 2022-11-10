@@ -1,4 +1,11 @@
-import { Button, TextField, CircularProgress } from "@mui/material";
+import {
+  Button,
+  TextField,
+  CircularProgress,
+  Checkbox,
+  Box,
+  Typography,
+} from "@mui/material";
 import { Stack } from "@mui/system";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -42,6 +49,7 @@ const NewShortcutForm = () => {
           command,
           text,
           prefix,
+          enabled,
         });
 
         setErrors({ ...initalErrState });
@@ -90,6 +98,14 @@ const NewShortcutForm = () => {
             multiline
           />
         </div>
+        <Stack direction="row" alignItems="center" justifyContent="flex-start">
+          <Checkbox
+            value={enabled}
+            onChange={() => setEnabled(!enabled)}
+            sx={{ ml: "-8px" }}
+          />
+          <Typography>Enable</Typography>
+        </Stack>
         <Stack direction="row" spacing={2} sx={{ mt: "16px" }}>
           <Button
             onClick={() => navigate(ROUTES.ROOT)}

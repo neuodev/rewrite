@@ -9,17 +9,49 @@ class Storage {
     return result[StorageKeys.shortcuts] || [];
   }
 
-  async newShortcut(shortcut: Shortcut) {
-    const shortcuts = await this.getShortcuts();
-    shortcuts.push(shortcut);
+  async saveShortcuts(shortcuts: Shortcut[]) {
     await chrome.storage.sync.set({
       [StorageKeys.shortcuts]: shortcuts,
     });
   }
 
+  async newShortcut(shortcut: Shortcut) {
+    const shortcuts = await this.getShortcuts();
+    shortcuts.push(shortcut);
+    await this.saveShortcuts(shortcuts);
+  }
+
   async isExist(prefix: Prefix, command: string): Promise<boolean> {
     const shortcuts = await this.getShortcuts();
     return shortcuts.some((s) => s.command === command && s.prefix === prefix);
+  }
+
+  async delete(prefix: Prefix, command: string) {
+    const shortcuts = await this.getShortcuts();
+    await this.saveShortcuts(
+      shortcuts.filter((s) => s.command !== command && s.prefix !== prefix)
+    );
+  }
+
+  async toggleShortcut(prefix: Prefix, command: string) {
+    const shortcuts = await this.getShortcuts();
+    const shortcut = shortcuts.find(
+      (s) => s.prefix === prefix && s.command === command
+    );
+
+    if (!shortcut) return;
+    shortcut.enabled = !shortcut.enabled;
+
+    this.saveShortcuts(shortcuts);
+  }
+
+  async update(query: { prefix: Prefix; command: string }, shortcut: Shortcut) {
+    const shortcuts = await this.getShortcuts();
+    const filteredShortcuts = shortcuts.filter(
+      (s) => s.command !== query.command && s.prefix !== query.prefix
+    );
+    filteredShortcuts.push(shortcut);
+    await this.saveShortcuts(filteredShortcuts);
   }
 }
 

@@ -5,6 +5,7 @@ import {
   ListItemText,
   Menu,
   MenuItem,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
@@ -41,33 +42,51 @@ const ShortcutItem: React.FC<{ shortcut: Shortcut }> = ({ shortcut }) => {
           justifyContent="center"
           spacing={2}
         >
-          <Typography
-            sx={{
-              width: "25%",
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              bgcolor: "grey.300",
-              p: "4px 8px",
-              borderRadius: "8px",
-              textAlign: "center",
-            }}
-            fontWeight={500}
+          <Tooltip
+            arrow
+            placement="top"
+            title={
+              <Typography>
+                {prefix}
+                {command}
+              </Typography>
+            }
           >
-            {prefix}
-            {command}
-          </Typography>
-          <Typography
-            sx={{
-              width: "75%",
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-            }}
-            variant="caption"
+            <Typography
+              sx={{
+                width: "30%",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                bgcolor: "grey.300",
+                p: "4px 8px",
+                borderRadius: "8px",
+                textAlign: "center",
+                fontFamily: "monospace",
+              }}
+              fontWeight={500}
+            >
+              {prefix}
+              {command}
+            </Typography>
+          </Tooltip>
+          <Tooltip
+            arrow
+            placement="top"
+            title={<Typography>{text}</Typography>}
           >
-            {text}
-          </Typography>
+            <Typography
+              sx={{
+                width: "70%",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+              variant="caption"
+            >
+              {text}
+            </Typography>
+          </Tooltip>
         </Stack>
       </ListItemText>
       <Menu
