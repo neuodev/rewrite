@@ -45,6 +45,7 @@ const NewShortcutForm = () => {
         });
 
         setErrors({ ...initalErrState });
+        navigate(ROUTES.ROOT);
       }
     } catch (error) {
       let err = "Unexpected error happend, please retry";
