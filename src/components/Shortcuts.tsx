@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import storage from "../chrome/storage";
+import { ROUTES } from "../constants";
 import { Shortcut } from "../types";
-import Button from "./common/Button";
+import { Link } from "react-router-dom";
 import ShortcutItem from "./ShortcutItem";
 
 const Shortcuts: React.FC<{}> = () => {
@@ -21,7 +22,9 @@ const Shortcuts: React.FC<{}> = () => {
         <h1 className="text-xl capitalize font-bold text-gray-800">
           Shortcuts
         </h1>
-        <Button variant="primary">New</Button>
+        <Link to={ROUTES.NEW_SHORTCUT} className="btn-primary">
+          New
+        </Link>
       </div>
 
       <ul>

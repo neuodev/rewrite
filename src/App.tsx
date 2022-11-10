@@ -29,7 +29,6 @@ const router = createMemoryRouter([
 ]);
 
 function App() {
-  console.log(window.location);
   return (
     <div>
       <RouterProvider router={router} />{" "}

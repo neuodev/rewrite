@@ -1,15 +1,25 @@
 import React, { useEffect, useState } from "react";
 import storage from "../chrome/storage";
 import { Prefix, Shortcut } from "../types";
+import Button from "./common/Button";
+import Input from "./common/Input";
 
 const NewShortcutForm = () => {
+  const [state, setState] = useState<{
+    key: string;
+    value: string;
+    prefix: Prefix;
+  }>({
+    key: "",
+    value: "",
+    prefix: Prefix.Slash,
+  });
+
   const [key, setKey] = useState("");
   const [value, setValue] = useState("");
-  const [shortcuts, setShortcuts] = useState<Array<Shortcut>>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  async function newShortcut() {
     if (!key || !value) return;
     setLoading(true);
     await storage.newShortcut({
@@ -22,41 +32,34 @@ const NewShortcutForm = () => {
     setLoading(false);
   }
 
-  useEffect(() => {
-    storage.getShortcuts().then((shortcuts) => {
-      setShortcuts(shortcuts);
-    });
-  }, [loading]);
-
   return (
-    <div>
-      <form onSubmit={onSubmit}>
-        <div style={{ padding: "4px" }}>
-          <strong> {Prefix.Slash} </strong>
-          <input
-            type="text"
-            placeholder="Key"
+    <div className="py-8 px-4">
+      <form onSubmit={(e) => e.preventDefault()}>
+        <div className="mb-4">
+          <Input
+            label="Shortcut"
+            placeholder="Type your shortcut eg: email"
+            helperText="Make it short."
+            as="input"
+            onChange={setKey}
             value={key}
-            onChange={(e) => setKey(e.target.value)}
           />
         </div>
-        <input
-          type="text"
-          placeholder="Value"
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
+
+        <Input
+          label="Value"
+          placeholder="What you want to store..."
+          helperText=""
+          as="textarea"
+          onChange={setValue}
+          value={key}
         />
-        <button type="submit">Add</button>
-        <span>{loading ? "loading" : ""}</span>
+        <div className="mt-4">
+          <button className="btn-primary text-sm" onClick={newShortcut}>
+            Create
+          </button>
+        </div>
       </form>
-      <ul>
-        {shortcuts.map(({ key, value, prefix }) => (
-          <li key={prefix + key}>
-            <span>{prefix}</span>
-            <span>{key}</span> -- <span>{value}</span>
-          </li>
-        ))}
-      </ul>
     </div>
   );
 };
