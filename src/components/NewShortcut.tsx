@@ -6,54 +6,53 @@ import storage from "../chrome/storage";
 import { ROUTES } from "../constants";
 import { Prefix, Shortcut } from "../types";
 
-type State = Shortcut & {
-  enabled: boolean;
-  isDuplicated: boolean;
-  unableToCreate: boolean;
-  loading: boolean;
-};
-
-const defaultState: State = {
-  command: "",
-  text: "",
-  prefix: Prefix.Slash,
-  enabled: true,
-  isDuplicated: false,
-  unableToCreate: false,
-  loading: false,
+const initalErrState = {
+  commandErr: null,
+  generalErr: null,
 };
 
 const NewShortcutForm = () => {
   const navigate = useNavigate();
-  const [state, setState] = useState<State>({
-    ...defaultState,
+  const [command, setCommand] = useState<string>("");
+  const [text, setText] = useState<string>("");
+  const [enabled, setEnabled] = useState<boolean>(true);
+  const [prefix, setPrefix] = useState<Prefix>(Prefix.Slash);
+  const [errors, setErrors] = useState<{
+    commandErr: string | null;
+    generalErr: string | null;
+  }>({
+    ...initalErrState,
   });
+  const [loading, setLoading] = useState<boolean>(false);
 
-  function updateFormFields(
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) {
-    let name = e.target.name;
-    let value = e.target.value;
-    setState({ ...state, [name]: value });
-  }
+  const resetErrors = () => setErrors({ ...initalErrState });
 
   async function newShortcut() {
-    if (!state.command || !state.text) return;
+    if (!command || !text) return;
 
-    setState({ ...state, loading: true });
+    setLoading(true);
     try {
-      const isExist = await storage.isExist(state.prefix, state.command);
-      console.log({ isExist });
-      if (isExist) {
-        setState({ ...state, isDuplicated: true });
-      } else {
-        await storage.newShortcut(state);
-        setState({ ...defaultState });
+      const isExist = await storage.isExist(prefix, command);
+      setErrors({
+        ...errors,
+        commandErr: isExist ? "Shortcut already exist" : null,
+      });
+      if (!isExist) {
+        await storage.newShortcut({
+          command,
+          text,
+          prefix,
+        });
+
+        setErrors({ ...initalErrState });
       }
     } catch (error) {
-      alert("error!");
+      let err = "Unexpected error happend, please retry";
+      if (typeof error === "string") err = error;
+      else if (error instanceof Error) err = error.message;
+      setErrors({ ...errors, generalErr: err });
     }
-    setState({ ...state, loading: false });
+    setLoading(false);
   }
 
   return (
@@ -63,15 +62,14 @@ const NewShortcutForm = () => {
           <TextField
             label="Shortcut"
             placeholder="Type your shortcut eg: email"
-            helperText={
-              state.isDuplicated
-                ? "Shortcut already exist"
-                : "Make it memorable"
-            }
-            error={state.isDuplicated}
+            helperText={errors.commandErr || "Make it memorable"}
+            error={errors.commandErr !== null}
             name="command"
-            onChange={updateFormFields}
-            value={state.command}
+            onChange={(e) => {
+              setCommand(e.target.value);
+              resetErrors();
+            }}
+            value={command}
             sx={{ width: "100%" }}
           />
         </div>
@@ -81,8 +79,11 @@ const NewShortcutForm = () => {
             label="Text"
             placeholder="What you want to rewrite..."
             name="text"
-            onChange={updateFormFields}
-            value={state.text}
+            onChange={(e) => {
+              setText(e.target.value);
+              resetErrors();
+            }}
+            value={text}
             sx={{ width: "100%" }}
             rows={10}
             multiline
@@ -104,10 +105,16 @@ const NewShortcutForm = () => {
             type="submit"
             fullWidth
             onClick={newShortcut}
-            disabled={!state.command || !state.text || state.loading}
+            disabled={
+              !command ||
+              !text ||
+              loading ||
+              errors.commandErr !== null ||
+              errors.generalErr !== null
+            }
             size="large"
           >
-            {state.loading ? <CircularProgress size={20} /> : "Create"}
+            {loading ? <CircularProgress size={20} /> : "Create"}
           </Button>
         </Stack>
       </form>
