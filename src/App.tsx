@@ -7,6 +7,8 @@ import NewShortcut from "./components/NewShortcut";
 import Shortcuts from "./components/Shortcuts";
 import { ThemeProvider } from "@mui/material";
 import theme from "./theme";
+import { Provider } from "react-redux";
+import { store } from "./store";
 
 const router = createMemoryRouter([
   {
@@ -28,9 +30,11 @@ const router = createMemoryRouter([
 
 function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <RouterProvider router={router} />
-    </ThemeProvider>
+    <Provider store={store}>
+      <ThemeProvider theme={theme}>
+        <RouterProvider router={router} />
+      </ThemeProvider>
+    </Provider>
   );
 }
 
