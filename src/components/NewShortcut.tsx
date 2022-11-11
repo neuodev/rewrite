@@ -1,66 +1,59 @@
-import {
-  Button,
-  TextField,
-  CircularProgress,
-  Checkbox,
-  Typography,
-} from "@mui/material";
+import { Button, TextField, Checkbox, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import storage from "../chrome/storage";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { v4 as uuid } from "uuid";
 import { ROUTES } from "../constants";
+import { useShortcut } from "../state/shortcuts/hooks";
 import { Prefix } from "../types";
 
-const initalErrState = {
-  commandErr: null,
-  generalErr: null,
-};
-
-const NewShortcutForm = () => {
+const ShortcutForm = () => {
   const navigate = useNavigate();
-  const [command, setCommand] = useState<string>("");
-  const [text, setText] = useState<string>("");
-  const [enabled, setEnabled] = useState<boolean>(true);
-  const [prefix, setPrefix] = useState<Prefix>(Prefix.Slash);
-  const [errors, setErrors] = useState<{
-    commandErr: string | null;
-    generalErr: string | null;
-  }>({
-    ...initalErrState,
-  });
-  const [loading, setLoading] = useState<boolean>(false);
+  const [params] = useSearchParams();
+  const shortcutId = params.get("id");
 
-  const resetErrors = () => setErrors({ ...initalErrState });
+  const { createShortcut, isExist, getShortcut, updateShortcut } =
+    useShortcut();
+  const shortcut = getShortcut(shortcutId);
+  const [command, setCommand] = useState<string>(
+    shortcut ? shortcut.command : ""
+  );
+  const [text, setText] = useState<string>(shortcut ? shortcut.text : "");
+  const [enabled, setEnabled] = useState<boolean>(
+    shortcut ? shortcut.enabled : true
+  );
+  const [prefix, _setPrefix] = useState<Prefix>(
+    shortcut ? shortcut.prefix : Prefix.Slash
+  );
 
-  async function newShortcut() {
-    if (!command || !text) return;
+  const isShortcutExist = isExist(prefix, command);
+  const isInvalid = shortcut
+    ? isShortcutExist && shortcut.command !== command
+    : isShortcutExist;
 
-    setLoading(true);
-    try {
-      const isExist = await storage.isExist(prefix, command);
-      setErrors({
-        ...errors,
-        commandErr: isExist ? "Shortcut already exist" : null,
+  function shortcutHandler() {
+    if (!command || !text || isInvalid) return;
+    if (shortcut) {
+      updateShortcut(shortcut.id, {
+        prefix,
+        text,
+        enabled,
+        command,
       });
-      if (!isExist) {
-        await storage.newShortcut({
-          command,
-          text,
-          prefix,
-          enabled,
-        });
-
-        setErrors({ ...initalErrState });
-        navigate(ROUTES.ROOT);
-      }
-    } catch (error) {
-      let err = "Unexpected error happend, please retry";
-      if (typeof error === "string") err = error;
-      else if (error instanceof Error) err = error.message;
-      setErrors({ ...errors, generalErr: err });
+    } else {
+      const id = uuid();
+      createShortcut({
+        id,
+        text,
+        command,
+        enabled,
+        prefix,
+      });
     }
-    setLoading(false);
+    setCommand("");
+    setText("");
+    setEnabled(true);
+    navigate(ROUTES.ROOT);
   }
 
   return (
@@ -70,12 +63,13 @@ const NewShortcutForm = () => {
           <TextField
             label="Shortcut"
             placeholder="Type your shortcut eg: email"
-            helperText={errors.commandErr || "Make it memorable"}
-            error={errors.commandErr !== null}
+            helperText={
+              isInvalid ? "Shortcut already exist" : "Make it memorable"
+            }
+            error={isInvalid}
             name="command"
             onChange={(e) => {
               setCommand(e.target.value);
-              resetErrors();
             }}
             value={command}
             sx={{ width: "100%" }}
@@ -89,7 +83,6 @@ const NewShortcutForm = () => {
             name="text"
             onChange={(e) => {
               setText(e.target.value);
-              resetErrors();
             }}
             value={text}
             sx={{ width: "100%" }}
@@ -99,6 +92,7 @@ const NewShortcutForm = () => {
         </div>
         <Stack direction="row" alignItems="center" justifyContent="flex-start">
           <Checkbox
+            checked={enabled}
             value={enabled}
             defaultChecked
             onChange={() => setEnabled(!enabled)}
@@ -121,17 +115,11 @@ const NewShortcutForm = () => {
             color="primary"
             type="submit"
             fullWidth
-            onClick={newShortcut}
-            disabled={
-              !command ||
-              !text ||
-              loading ||
-              errors.commandErr !== null ||
-              errors.generalErr !== null
-            }
+            onClick={shortcutHandler}
+            disabled={!command || !text || isInvalid}
             size="large"
           >
-            {loading ? <CircularProgress size={20} /> : "Create"}
+            {shortcutId ? "Update" : "Create"}
           </Button>
         </Stack>
       </form>
@@ -139,4 +127,4 @@ const NewShortcutForm = () => {
   );
 };
 
-export default NewShortcutForm;
+export default ShortcutForm;

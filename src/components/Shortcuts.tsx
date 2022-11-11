@@ -1,23 +1,13 @@
-import React, { useState, useEffect } from "react";
-import storage from "../chrome/storage";
+import React from "react";
 import { ROUTES } from "../constants";
-import { Shortcut } from "../types";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import ShortcutItem from "./ShortcutItem";
 import { Button, List } from "@mui/material";
+import { useAppSelector } from "../store";
 
 const Shortcuts: React.FC<{}> = () => {
   const navigate = useNavigate();
-  const [shortcuts, setShortcuts] = useState<Shortcut[]>([]);
-  useEffect(() => {
-    storage
-      .getShortcuts()
-      .then(setShortcuts)
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
-
+  const { shortcuts } = useAppSelector((state) => state.shortcuts);
   return (
     <div className="px-4 overflow-auto">
       <div className="flex items-center justify-between py-4 px-1">

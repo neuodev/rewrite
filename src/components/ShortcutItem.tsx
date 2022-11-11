@@ -10,16 +10,20 @@ import {
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import ToggleOnIcon from "@mui/icons-material/ToggleOn";
 import MenuIcon from "@mui/icons-material/Menu";
 import React, { useState } from "react";
 import { Shortcut } from "../types";
 import { Stack } from "@mui/system";
-import storage from "../chrome/storage";
 import Switch from "./common/Switch";
+import { useShortcut } from "../state/shortcuts/hooks";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "../constants";
 
 const ShortcutItem: React.FC<{ shortcut: Shortcut }> = ({ shortcut }) => {
-  const { prefix, command, text, enabled } = shortcut;
+  const { deleteShortcut, toggleShortcut } = useShortcut();
+  const navigate = useNavigate();
+  const { prefix, command, text, enabled, id } = shortcut;
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -31,14 +35,11 @@ const ShortcutItem: React.FC<{ shortcut: Shortcut }> = ({ shortcut }) => {
 
   const listItems = [
     {
-      label: enabled ? "Disable" : "Enable",
-      icon: <Switch />,
-      onClick: () => {},
-    },
-    {
       label: "Edit",
       icon: <EditIcon />,
       onClick: () => {
+        console.log({ id });
+        navigate(`${ROUTES.NEW_SHORTCUT}?id=${id}`);
         handleClose();
       },
     },
@@ -46,7 +47,7 @@ const ShortcutItem: React.FC<{ shortcut: Shortcut }> = ({ shortcut }) => {
       label: "Delete",
       icon: <DeleteIcon />,
       onClick: () => {
-        storage.deleteShortcut(prefix, command);
+        deleteShortcut(id);
         handleClose();
       },
     },
@@ -69,8 +70,9 @@ const ShortcutItem: React.FC<{ shortcut: Shortcut }> = ({ shortcut }) => {
           <Tooltip
             arrow
             placement="top"
+            followCursor
             title={
-              <Typography>
+              <Typography sx={{ fontFamily: "monospace" }}>
                 {prefix}
                 {command}
               </Typography>
@@ -97,6 +99,7 @@ const ShortcutItem: React.FC<{ shortcut: Shortcut }> = ({ shortcut }) => {
           <Tooltip
             arrow
             placement="top"
+            followCursor
             title={<Typography>{text}</Typography>}
           >
             <Typography
@@ -106,7 +109,7 @@ const ShortcutItem: React.FC<{ shortcut: Shortcut }> = ({ shortcut }) => {
                 overflow: "hidden",
                 textOverflow: "ellipsis",
               }}
-              variant="caption"
+              variant="subtitle2"
             >
               {text}
             </Typography>
@@ -119,6 +122,26 @@ const ShortcutItem: React.FC<{ shortcut: Shortcut }> = ({ shortcut }) => {
         onClose={handleClose}
         sx={{ minWidth: "300px" }}
       >
+        <MenuItem sx={{ minWidth: "180px" }}>
+          <FormControlLabel
+            sx={{ px: "12px" }}
+            value={enabled}
+            control={
+              <Switch
+                color="primary"
+                onChange={() => toggleShortcut(id, !enabled)}
+                checked={enabled}
+              />
+            }
+            label={
+              <Typography sx={{ ml: "12px" }}>
+                {" "}
+                {enabled ? "Enabled" : "Disabled"}{" "}
+              </Typography>
+            }
+            labelPlacement="end"
+          />
+        </MenuItem>
         {listItems.map(({ icon, onClick, label }) => (
           <MenuItem key={label} sx={{ minWidth: "150px" }} onClick={onClick}>
             <ListItemIcon sx={{ width: "40px" }}>{icon}</ListItemIcon>

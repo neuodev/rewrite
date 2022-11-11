@@ -11,7 +11,7 @@ class Storage {
 
   async saveShortcuts(shortcuts: Shortcut[]) {
     await chrome.storage.sync.set({
-      [StorageKeys.shortcuts]: shortcuts,
+      [StorageKeys.shortcuts]: JSON.parse(JSON.stringify(shortcuts)),
     });
   }
 

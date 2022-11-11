@@ -1,12 +1,14 @@
 import { RouterProvider, createMemoryRouter } from "react-router-dom";
 import { ROUTES } from "./constants";
 import ErrorScreen from "./components/ErrorScreen";
-import "./index.css";
 import Root from "./components/Layout/Root";
 import NewShortcut from "./components/NewShortcut";
 import Shortcuts from "./components/Shortcuts";
 import { ThemeProvider } from "@mui/material";
 import theme from "./theme";
+import { Provider } from "react-redux";
+import { store } from "./store";
+import "./index.css";
 
 const router = createMemoryRouter([
   {
@@ -28,9 +30,11 @@ const router = createMemoryRouter([
 
 function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <RouterProvider router={router} />
-    </ThemeProvider>
+    <Provider store={store}>
+      <ThemeProvider theme={theme}>
+        <RouterProvider router={router} />
+      </ThemeProvider>
+    </Provider>
   );
 }
 
