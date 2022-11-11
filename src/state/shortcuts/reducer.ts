@@ -7,6 +7,7 @@ import {
   updateShortcut,
 } from "./actions";
 import produce from "immer";
+import storage from "../../chrome/storage";
 
 export const shortcutsReducer = createReducer<{ shortcuts: Shortcut[] }>(
   { shortcuts: [] },
@@ -15,6 +16,7 @@ export const shortcutsReducer = createReducer<{ shortcuts: Shortcut[] }>(
       .addCase(createShotcut, (state, { payload }) =>
         produce(state, (draftState) => {
           draftState.shortcuts.unshift(payload);
+          storage.saveShortcuts(draftState.shortcuts).catch(console.error);
         })
       )
       .addCase(deleteShortcut, (state, { payload }) =>
@@ -22,13 +24,13 @@ export const shortcutsReducer = createReducer<{ shortcuts: Shortcut[] }>(
           draftState.shortcuts = draftState.shortcuts.filter(
             (s) => s.id !== payload.id
           );
+          storage.saveShortcuts(draftState.shortcuts).catch(console.error);
         })
       )
       .addCase(updateShortcut, (state, { payload: { id, update } }) =>
         produce(state, (draftState) => {
           const shortcut = draftState.shortcuts.find((s) => s.id === id);
           if (!shortcut) return;
-          console.log({ update });
           shortcut.command = update.command || shortcut.command;
           shortcut.prefix = update.prefix || shortcut.prefix;
           shortcut.text = update.text || shortcut.text;
@@ -36,6 +38,7 @@ export const shortcutsReducer = createReducer<{ shortcuts: Shortcut[] }>(
             typeof update.enabled === "undefined"
               ? shortcut.enabled
               : update.enabled;
+          storage.saveShortcuts(draftState.shortcuts).catch(console.error);
         })
       );
   }

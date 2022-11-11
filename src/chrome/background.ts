@@ -7,10 +7,15 @@ chrome.runtime.onMessage.addListener(function (
   sendResponse: (res: ExtensionRes) => void
 ) {
   if (msg.type === MessageType.GetShortcuts) {
-    // Todo: handler error case
-    storage.getShortcuts().then((shortcuts) => {
-      sendResponse(shortcuts);
-    });
+    storage
+      .getShortcuts()
+      .then((shortcuts) => {
+        sendResponse(shortcuts);
+      })
+      .catch((err) => {
+        console.log(err);
+        sendResponse([]);
+      });
   }
 
   return true;

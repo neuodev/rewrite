@@ -4,8 +4,8 @@ let shortcuts: Array<Shortcut> = [];
 
 chrome.runtime.sendMessage(
   { type: MessageType.GetShortcuts },
-  function (res: Shortcut[]) {
-    shortcuts = res;
+  function (res: Shortcut[] | undefined) {
+    shortcuts = res || [];
   }
 );
 
@@ -15,10 +15,10 @@ const inputs = document.querySelectorAll("input");
 textareas.forEach(onChange);
 inputs.forEach(onChange);
 
-type InputElement = HTMLInputElement | HTMLTextAreaElement;
-function onChange(el: InputElement) {
+type TextField = HTMLInputElement | HTMLTextAreaElement;
+function onChange(el: TextField) {
   el.addEventListener("input", (e) => {
-    let value = (e.target as InputElement).value;
+    let value = (e.target as TextField).value;
     shortcuts.forEach(({ prefix, command, text }) => {
       const keyword = `${prefix}${command} `;
       let regexp = new RegExp(keyword, "g");
