@@ -15,20 +15,57 @@
         height: 100vh;
         width: 100%;
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
       }
 
+      input {
+        width: 500px;
+        margin-bottom: 10px;
+        border-radius: 8px;
+        font-size: 18px;
+        padding: 15px;
+        font-family: monospace;
+      }
+
       textarea {
         width: 500px;
-        height: 500px;
+        height: 300px;
         padding: 20px;
         border-radius: 8px;
         font-size: 18px;
       }
+      button {
+        margin: 10px 20px;
+      }
+
+      #textbox {
+        border: 1px solid gray;
+        height: 20px;
+        width: 500px;
+        margin: 20px 0px;
+      }
     </style>
   </head>
   <body>
+    <input type="text" placeholder="Email" />
+    <input type="text" placeholder="Github" />
+    <input type="text" placeholder="Phone" />
     <textarea placeholder="Type something"></textarea>
+    <div
+      aria-label="Type something"
+      role="textbox"
+      id="textbox"
+      aria-multiline="true"
+    ></div>
+    <button>Show Input</button>
+
+    <script>
+      const body = document.querySelector("body");
+      document.querySelector("button").addEventListener("click", () => {
+        body.innerHTML += '<input type="text" placeholder="Github" />';
+      });
+    </script>
   </body>
 </html>
