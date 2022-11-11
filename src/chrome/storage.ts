@@ -1,5 +1,5 @@
 import { StorageKeys } from "../constants";
-import { Prefix, Shortcut } from "../types";
+import { Message, MessageType, Prefix, Shortcut } from "../types";
 
 class Storage {
   async getShortcuts(): Promise<Array<Shortcut>> {
@@ -10,9 +10,29 @@ class Storage {
   }
 
   async saveShortcuts(shortcuts: Shortcut[]) {
+    const list = JSON.parse(JSON.stringify(shortcuts));
     await chrome.storage.sync.set({
-      [StorageKeys.shortcuts]: JSON.parse(JSON.stringify(shortcuts)),
+      [StorageKeys.shortcuts]: list,
     });
+
+    chrome.tabs &&
+      chrome.tabs.query(
+        {
+          active: true,
+          currentWindow: true,
+        },
+        (tabs) => {
+          console.log(tabs);
+          chrome.tabs.sendMessage(
+            tabs[0].id || 0,
+            {
+              type: MessageType.ShortcutsRes,
+              shortcuts: list,
+            } as Message,
+            () => {}
+          );
+        }
+      );
   }
 
   async newShortcut(shortcut: Shortcut) {

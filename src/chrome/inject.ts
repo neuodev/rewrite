@@ -1,13 +1,18 @@
-import { MessageType, Shortcut } from "../types";
+import { Message, MessageType, Shortcut } from "../types";
 
 let shortcuts: Array<Shortcut> = [];
-
 chrome.runtime.sendMessage(
   { type: MessageType.GetShortcuts },
   function (res: Shortcut[] | undefined) {
     shortcuts = res || [];
   }
 );
+chrome.runtime.onMessage.addListener((msg: Message) => {
+  console.log({ msg });
+  if (msg.type === MessageType.ShortcutsRes) {
+    shortcuts = msg.shortcuts;
+  }
+});
 
 const textareas = document.querySelectorAll("textarea");
 const inputs = document.querySelectorAll("input");
