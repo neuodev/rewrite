@@ -17,8 +17,10 @@ import { Shortcut } from "../types";
 import { Stack } from "@mui/system";
 import storage from "../chrome/storage";
 import Switch from "./common/Switch";
+import { useShortcut } from "../state/shortcuts/hooks";
 
 const ShortcutItem: React.FC<{ shortcut: Shortcut }> = ({ shortcut }) => {
+  const { deleteShortcut } = useShortcut();
   const { prefix, command, text, enabled } = shortcut;
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -46,7 +48,7 @@ const ShortcutItem: React.FC<{ shortcut: Shortcut }> = ({ shortcut }) => {
       label: "Delete",
       icon: <DeleteIcon />,
       onClick: () => {
-        storage.deleteShortcut(prefix, command);
+        deleteShortcut(prefix, command);
         handleClose();
       },
     },

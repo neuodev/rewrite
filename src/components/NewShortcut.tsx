@@ -1,14 +1,8 @@
-import {
-  Button,
-  TextField,
-  CircularProgress,
-  Checkbox,
-  Typography,
-} from "@mui/material";
+import { Button, TextField, Checkbox, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import storage from "../chrome/storage";
+import uuid from "uuid";
 import { ROUTES } from "../constants";
 import { useShortcut } from "../state/shortcuts/hooks";
 import { Prefix } from "../types";
@@ -23,7 +17,9 @@ const NewShortcutForm = () => {
 
   async function newShortcut() {
     if (!command || !text || isShortcutExist) return;
+    const id = uuid.v4();
     createShortcut({
+      id,
       text,
       command,
       enabled,

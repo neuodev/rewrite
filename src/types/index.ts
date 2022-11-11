@@ -15,6 +15,7 @@ export type Message =
 export type ExtensionRes = Shortcut[] | {};
 
 export type Shortcut = {
+  id: string;
   command: string;
   text: string;
   prefix: Prefix;
