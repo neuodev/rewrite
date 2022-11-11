@@ -10,58 +10,32 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import storage from "../chrome/storage";
 import { ROUTES } from "../constants";
+import { useShortcut } from "../state/shortcuts/hooks";
 import { Prefix } from "../types";
-
-const initalErrState = {
-  commandErr: null,
-  generalErr: null,
-};
 
 const NewShortcutForm = () => {
   const navigate = useNavigate();
+  const { createShortcut, isExist } = useShortcut();
   const [command, setCommand] = useState<string>("");
   const [text, setText] = useState<string>("");
   const [enabled, setEnabled] = useState<boolean>(true);
   const [prefix, setPrefix] = useState<Prefix>(Prefix.Slash);
-  const [errors, setErrors] = useState<{
-    commandErr: string | null;
-    generalErr: string | null;
-  }>({
-    ...initalErrState,
-  });
-  const [loading, setLoading] = useState<boolean>(false);
-
-  const resetErrors = () => setErrors({ ...initalErrState });
 
   async function newShortcut() {
-    if (!command || !text) return;
-
-    setLoading(true);
-    try {
-      const isExist = await storage.isExist(prefix, command);
-      setErrors({
-        ...errors,
-        commandErr: isExist ? "Shortcut already exist" : null,
-      });
-      if (!isExist) {
-        await storage.newShortcut({
-          command,
-          text,
-          prefix,
-          enabled,
-        });
-
-        setErrors({ ...initalErrState });
-        navigate(ROUTES.ROOT);
-      }
-    } catch (error) {
-      let err = "Unexpected error happend, please retry";
-      if (typeof error === "string") err = error;
-      else if (error instanceof Error) err = error.message;
-      setErrors({ ...errors, generalErr: err });
-    }
-    setLoading(false);
+    if (!command || !text || isShortcutExist) return;
+    createShortcut({
+      text,
+      command,
+      enabled,
+      prefix,
+    });
+    setCommand("");
+    setText("");
+    setEnabled(true);
+    navigate(ROUTES.ROOT);
   }
+
+  const isShortcutExist = isExist(prefix, command);
 
   return (
     <div className="py-8 px-4">
@@ -70,12 +44,13 @@ const NewShortcutForm = () => {
           <TextField
             label="Shortcut"
             placeholder="Type your shortcut eg: email"
-            helperText={errors.commandErr || "Make it memorable"}
-            error={errors.commandErr !== null}
+            helperText={
+              isShortcutExist ? "Shortcut already exist" : "Make it memorable"
+            }
+            error={isShortcutExist}
             name="command"
             onChange={(e) => {
               setCommand(e.target.value);
-              resetErrors();
             }}
             value={command}
             sx={{ width: "100%" }}
@@ -89,7 +64,6 @@ const NewShortcutForm = () => {
             name="text"
             onChange={(e) => {
               setText(e.target.value);
-              resetErrors();
             }}
             value={text}
             sx={{ width: "100%" }}
@@ -122,16 +96,10 @@ const NewShortcutForm = () => {
             type="submit"
             fullWidth
             onClick={newShortcut}
-            disabled={
-              !command ||
-              !text ||
-              loading ||
-              errors.commandErr !== null ||
-              errors.generalErr !== null
-            }
+            disabled={!command || !text || isShortcutExist}
             size="large"
           >
-            {loading ? <CircularProgress size={20} /> : "Create"}
+            Create
           </Button>
         </Stack>
       </form>

@@ -1,17 +1,20 @@
 import { createAction } from "@reduxjs/toolkit";
+import { Prefix, Shortcut } from "../../types";
 
-export const getShortcutsReq = createAction("get-shortcuts/req");
-export const getShortcutsErr = createAction("get-shortcuts/err");
-export const getShortcutsRes = createAction("get-shortcuts/res");
-
-export const newShortcutReq = createAction("new-shortcuts/req");
-export const newShortcutErr = createAction("new-shortcuts/err");
-export const newShortcutRes = createAction("new-shortcuts/res");
-
-export const delShortcutReq = createAction("delete-shortcuts/req");
-export const delShortcutErr = createAction("delete-shortcuts/req");
-export const delShortcutRes = createAction("delete-shortcuts/res");
-
-export const updateShortcutReq = createAction("update-shortcuts/req");
-export const updateShortcutErr = createAction("update-shortcuts/req");
-export const updateShortcutRes = createAction("update-shortcuts/res");
+export const getShortcuts = createAction<Shortcut[]>("shortcut/get");
+export const createShotcut = createAction<Shortcut>("shortcuts/create");
+export const deleteShortcut = createAction<{ prefix: Prefix; command: string }>(
+  "shortcuts/delete"
+);
+export const updateShortcut = createAction<{
+  query: {
+    prefix: Prefix;
+    command: string;
+  };
+  update: {
+    prefix?: Prefix;
+    command?: string;
+    text?: string;
+    enabled?: boolean;
+  };
+}>("shortucts/update");

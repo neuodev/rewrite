@@ -9,7 +9,7 @@ const namespace = "app_state";
 
 export const store = configureStore({
   reducer: {
-    shorcuts: shortcutsReducer,
+    shortcuts: shortcutsReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat([
