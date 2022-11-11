@@ -15,9 +15,11 @@ import MenuIcon from "@mui/icons-material/Menu";
 import React, { useState } from "react";
 import { Shortcut } from "../types";
 import { Stack } from "@mui/system";
+import storage from "../chrome/storage";
+import Switch from "./common/Switch";
 
 const ShortcutItem: React.FC<{ shortcut: Shortcut }> = ({ shortcut }) => {
-  const { prefix, command, text } = shortcut;
+  const { prefix, command, text, enabled } = shortcut;
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -27,6 +29,28 @@ const ShortcutItem: React.FC<{ shortcut: Shortcut }> = ({ shortcut }) => {
     setAnchorEl(null);
   };
 
+  const listItems = [
+    {
+      label: enabled ? "Disable" : "Enable",
+      icon: <Switch />,
+      onClick: () => {},
+    },
+    {
+      label: "Edit",
+      icon: <EditIcon />,
+      onClick: () => {
+        handleClose();
+      },
+    },
+    {
+      label: "Delete",
+      icon: <DeleteIcon />,
+      onClick: () => {
+        storage.deleteShortcut(prefix, command);
+        handleClose();
+      },
+    },
+  ];
   return (
     <ListItem
       secondaryAction={
@@ -95,24 +119,12 @@ const ShortcutItem: React.FC<{ shortcut: Shortcut }> = ({ shortcut }) => {
         onClose={handleClose}
         sx={{ minWidth: "300px" }}
       >
-        <MenuItem onClick={handleClose}>
-          <ListItemIcon>
-            <ToggleOnIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Disable</ListItemText>
-        </MenuItem>
-        <MenuItem onClick={handleClose}>
-          <ListItemIcon>
-            <EditIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Edit</ListItemText>
-        </MenuItem>
-        <MenuItem onClick={handleClose}>
-          <ListItemIcon>
-            <DeleteIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Delete</ListItemText>
-        </MenuItem>
+        {listItems.map(({ icon, onClick, label }) => (
+          <MenuItem key={label} sx={{ minWidth: "150px" }} onClick={onClick}>
+            <ListItemIcon sx={{ width: "40px" }}>{icon}</ListItemIcon>
+            <ListItemText>{label}</ListItemText>
+          </MenuItem>
+        ))}
       </Menu>
     </ListItem>
   );

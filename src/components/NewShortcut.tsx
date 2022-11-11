@@ -3,15 +3,14 @@ import {
   TextField,
   CircularProgress,
   Checkbox,
-  Box,
   Typography,
 } from "@mui/material";
 import { Stack } from "@mui/system";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import storage from "../chrome/storage";
 import { ROUTES } from "../constants";
-import { Prefix, Shortcut } from "../types";
+import { Prefix } from "../types";
 
 const initalErrState = {
   commandErr: null,
@@ -101,6 +100,7 @@ const NewShortcutForm = () => {
         <Stack direction="row" alignItems="center" justifyContent="flex-start">
           <Checkbox
             value={enabled}
+            defaultChecked
             onChange={() => setEnabled(!enabled)}
             sx={{ ml: "-8px" }}
           />

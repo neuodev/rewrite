@@ -26,7 +26,7 @@ class Storage {
     return shortcuts.some((s) => s.command === command && s.prefix === prefix);
   }
 
-  async delete(prefix: Prefix, command: string) {
+  async deleteShortcut(prefix: Prefix, command: string) {
     const shortcuts = await this.getShortcuts();
     await this.saveShortcuts(
       shortcuts.filter((s) => s.command !== command && s.prefix !== prefix)
