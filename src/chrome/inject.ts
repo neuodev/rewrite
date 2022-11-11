@@ -19,12 +19,14 @@ type TextField = HTMLInputElement | HTMLTextAreaElement;
 function onChange(el: TextField) {
   el.addEventListener("input", (e) => {
     let value = (e.target as TextField).value;
-    shortcuts.forEach(({ prefix, command, text }) => {
-      const keyword = `${prefix}${command} `;
-      let regexp = new RegExp(keyword, "g");
-      if (regexp.test(value)) {
-        el.value = value.replace(keyword, text + " ");
-      }
-    });
+    shortcuts
+      .filter(({ enabled }) => enabled === true)
+      .forEach(({ prefix, command, text }) => {
+        const keyword = `${prefix}${command} `;
+        let regexp = new RegExp(keyword, "g");
+        if (regexp.test(value)) {
+          el.value = value.replace(keyword, text + " ");
+        }
+      });
   });
 }
