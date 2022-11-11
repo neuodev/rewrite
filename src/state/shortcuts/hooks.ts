@@ -14,13 +14,10 @@ export const useShortcut = () => {
     dispatch(createShortcutAction(shortcut));
   }
 
-  function toggleShortcut(prefix: Prefix, command: string, enabled: boolean) {
+  function toggleShortcut(id: string, enabled: boolean) {
     dispatch(
       updateShortcutAction({
-        query: {
-          prefix,
-          command,
-        },
+        id,
         update: {
           enabled,
         },
@@ -29,8 +26,7 @@ export const useShortcut = () => {
   }
 
   function updateShortcut(
-    prefix: Prefix,
-    command: string,
+    id: string,
     update: {
       prefix?: Prefix;
       command?: string;
@@ -40,21 +36,22 @@ export const useShortcut = () => {
   ) {
     dispatch(
       updateShortcutAction({
-        query: {
-          prefix,
-          command,
-        },
+        id,
         update,
       })
     );
   }
 
-  function deleteShortcut(prefix: Prefix, command: string) {
-    dispatch(deleteShortcutAction({ prefix, command }));
+  function deleteShortcut(id: string) {
+    dispatch(deleteShortcutAction({ id }));
   }
 
   function isExist(prefix: Prefix, command: string): boolean {
     return shortcuts.some((s) => s.prefix === prefix && s.command === command);
+  }
+
+  function getShortcut(id: string | null): Shortcut | null {
+    return shortcuts.find((s) => s.id === id) ?? null;
   }
 
   return {
@@ -63,5 +60,6 @@ export const useShortcut = () => {
     updateShortcut,
     deleteShortcut,
     isExist,
+    getShortcut,
   };
 };

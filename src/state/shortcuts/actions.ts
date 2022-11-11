@@ -3,14 +3,9 @@ import { Prefix, Shortcut } from "../../types";
 
 export const getShortcuts = createAction<Shortcut[]>("shortcut/get");
 export const createShotcut = createAction<Shortcut>("shortcuts/create");
-export const deleteShortcut = createAction<{ prefix: Prefix; command: string }>(
-  "shortcuts/delete"
-);
+export const deleteShortcut = createAction<{ id: string }>("shortcuts/delete");
 export const updateShortcut = createAction<{
-  query: {
-    prefix: Prefix;
-    command: string;
-  };
+  id: string;
   update: {
     prefix?: Prefix;
     command?: string;

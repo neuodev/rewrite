@@ -20,19 +20,18 @@ export const shortcutsReducer = createReducer<{ shortcuts: Shortcut[] }>(
       .addCase(deleteShortcut, (state, { payload }) =>
         produce(state, (draftState) => {
           draftState.shortcuts = draftState.shortcuts.filter(
-            (s) => s.prefix !== payload.prefix && s.command !== payload.command
+            (s) => s.id !== payload.id
           );
         })
       )
-      .addCase(updateShortcut, (state, { payload: { query, update } }) =>
+      .addCase(updateShortcut, (state, { payload: { id, update } }) =>
         produce(state, (draftState) => {
-          const shortcut = draftState.shortcuts.find(
-            (s) => s.prefix === query.prefix && s.command === query.command
-          );
+          const shortcut = draftState.shortcuts.find((s) => s.id === id);
           if (!shortcut) return;
+          console.log({ update });
           shortcut.command = update.command || shortcut.command;
           shortcut.prefix = update.prefix || shortcut.prefix;
-          shortcut.text = update.text || shortcut.prefix;
+          shortcut.text = update.text || shortcut.text;
           shortcut.enabled =
             typeof update.enabled === "undefined"
               ? shortcut.enabled

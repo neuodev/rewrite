@@ -1,37 +1,60 @@
 import { Button, TextField, Checkbox, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import uuid from "uuid";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { v4 as uuid } from "uuid";
 import { ROUTES } from "../constants";
 import { useShortcut } from "../state/shortcuts/hooks";
 import { Prefix } from "../types";
 
-const NewShortcutForm = () => {
+const ShortcutForm = () => {
   const navigate = useNavigate();
-  const { createShortcut, isExist } = useShortcut();
-  const [command, setCommand] = useState<string>("");
-  const [text, setText] = useState<string>("");
-  const [enabled, setEnabled] = useState<boolean>(true);
-  const [prefix, setPrefix] = useState<Prefix>(Prefix.Slash);
+  const [params] = useSearchParams();
+  const shortcutId = params.get("id");
 
-  async function newShortcut() {
-    if (!command || !text || isShortcutExist) return;
-    const id = uuid.v4();
-    createShortcut({
-      id,
-      text,
-      command,
-      enabled,
-      prefix,
-    });
+  const { createShortcut, isExist, getShortcut, updateShortcut } =
+    useShortcut();
+  const shortcut = getShortcut(shortcutId);
+  const [command, setCommand] = useState<string>(
+    shortcut ? shortcut.command : ""
+  );
+  const [text, setText] = useState<string>(shortcut ? shortcut.text : "");
+  const [enabled, setEnabled] = useState<boolean>(
+    shortcut ? shortcut.enabled : true
+  );
+  const [prefix, _setPrefix] = useState<Prefix>(
+    shortcut ? shortcut.prefix : Prefix.Slash
+  );
+
+  const isShortcutExist = isExist(prefix, command);
+  const isInvalid = shortcut
+    ? isShortcutExist && shortcut.command !== command
+    : isShortcutExist;
+
+  function shortcutHandler() {
+    if (!command || !text || isInvalid) return;
+    if (shortcut) {
+      updateShortcut(shortcut.id, {
+        prefix,
+        text,
+        enabled,
+        command,
+      });
+    } else {
+      const id = uuid();
+      createShortcut({
+        id,
+        text,
+        command,
+        enabled,
+        prefix,
+      });
+    }
     setCommand("");
     setText("");
     setEnabled(true);
     navigate(ROUTES.ROOT);
   }
-
-  const isShortcutExist = isExist(prefix, command);
 
   return (
     <div className="py-8 px-4">
@@ -41,9 +64,9 @@ const NewShortcutForm = () => {
             label="Shortcut"
             placeholder="Type your shortcut eg: email"
             helperText={
-              isShortcutExist ? "Shortcut already exist" : "Make it memorable"
+              isInvalid ? "Shortcut already exist" : "Make it memorable"
             }
-            error={isShortcutExist}
+            error={isInvalid}
             name="command"
             onChange={(e) => {
               setCommand(e.target.value);
@@ -69,6 +92,7 @@ const NewShortcutForm = () => {
         </div>
         <Stack direction="row" alignItems="center" justifyContent="flex-start">
           <Checkbox
+            checked={enabled}
             value={enabled}
             defaultChecked
             onChange={() => setEnabled(!enabled)}
@@ -91,11 +115,11 @@ const NewShortcutForm = () => {
             color="primary"
             type="submit"
             fullWidth
-            onClick={newShortcut}
-            disabled={!command || !text || isShortcutExist}
+            onClick={shortcutHandler}
+            disabled={!command || !text || isInvalid}
             size="large"
           >
-            Create
+            {shortcutId ? "Update" : "Create"}
           </Button>
         </Stack>
       </form>
@@ -103,4 +127,4 @@ const NewShortcutForm = () => {
   );
 };
 
-export default NewShortcutForm;
+export default ShortcutForm;
