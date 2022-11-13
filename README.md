@@ -1,6 +1,6 @@
-# Rewrite
+# Retype
 
-You don't have to type it twice!
+You don't have to type it twice! You can stop typing the same text over and over again. Save all of your important info as shortcuts that you can easily retype whenever you want
 
 <p align="center"> 
     <img width="150px" src="./public/logo512.png" alt="Logo" title="Rewrite">

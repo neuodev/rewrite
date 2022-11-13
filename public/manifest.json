@@ -1,7 +1,7 @@
 {
-  "name": "Rewrite",
-  "description": "You don't have to type it twice!",
-  "version": "1.0.0",
+  "name": "Retype",
+  "description": "You don't have to type it twice! You can stop typing the same text over and over again. Save all of your important info as shortcuts that you can easily retype whenever you want.",
+  "version": "1.0.1",
   "manifest_version": 3,
   "action": {
     "default_popup": "index.html",
