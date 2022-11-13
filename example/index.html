@@ -53,19 +53,5 @@
     <input type="text" placeholder="Github" />
     <input type="text" placeholder="Phone" />
     <textarea placeholder="Type something"></textarea>
-    <div
-      aria-label="Type something"
-      role="textbox"
-      id="textbox"
-      aria-multiline="true"
-    ></div>
-    <button>Show Input</button>
-
-    <script>
-      const body = document.querySelector("body");
-      document.querySelector("button").addEventListener("click", () => {
-        body.innerHTML += '<input type="text" placeholder="Github" />';
-      });
-    </script>
   </body>
 </html>
