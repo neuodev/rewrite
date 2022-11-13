@@ -14,29 +14,27 @@ chrome.runtime.onMessage.addListener((msg: Message) => {
 });
 
 type TextField = HTMLInputElement | HTMLTextAreaElement;
-function inputEventHandler(e: Event, el: TextField) {
-  let value = (e.target as TextField).value;
-
-  shortcuts
-    .filter(({ enabled }) => enabled === true)
-    .forEach(({ prefix, command, text }) => {
-      const keyword = `${prefix}${command} `;
-      let regexp = new RegExp(keyword, "g");
-      if (regexp.test(value)) {
-        const newText = value.replace(keyword, text + " ");
-        el.value = newText;
-      }
-    });
+function inputEventHandler(el: TextField) {
+  return (e: Event) => {
+    let value = (e.target as TextField).value;
+    shortcuts
+      // todo: Should be filtered on the server worker side
+      .filter(({ enabled }) => enabled === true)
+      .forEach(({ prefix, command, text }) => {
+        const keyword = `${prefix}${command} `;
+        let regexp = new RegExp(keyword, "g");
+        if (regexp.test(value)) {
+          const newText = value.replace(keyword, text + " ");
+          el.value = newText;
+        }
+      });
+  };
 }
 
 function toggleEvent(el: TextField) {
-  el.removeEventListener("input", (e) => {
-    inputEventHandler(e, el);
-  });
-
-  el.addEventListener("input", (e) => {
-    inputEventHandler(e, el);
-  });
+  const handler = inputEventHandler(el);
+  el.removeEventListener("input", handler);
+  el.addEventListener("input", handler);
 }
 
 const body = document.querySelector("body")!;
