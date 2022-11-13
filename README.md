@@ -8,7 +8,9 @@ You don't have to type it twice!
 
 ## Preview
 
-![Preview example](./preview/example.gif)
+<p align="center"> 
+    <img src="./preview/example.gif" alt="example" title="Rewrite">
+</p>
 
 <details>
     <summary>Screenshots</summary>
