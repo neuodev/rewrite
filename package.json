@@ -31,7 +31,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "watch": "npm-watch",
-    "build:prod": "npm run build && zip -r rewrite.zip build"
+    "build:prod": "npm run build && zip -r retype.zip build"
   },
   "watch": {
     "build": {
