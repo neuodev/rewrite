@@ -31,6 +31,18 @@ function inputEventHandler(el: TextField) {
   };
 }
 
+function textboxHandler(textbox: HTMLElement) {
+  const value = textbox.innerHTML;
+  shortcuts
+    .filter(({ enabled }) => enabled === true)
+    .forEach(({ prefix, command, text }) => {
+      const keyword = `${prefix}${command}`;
+      let regexp = new RegExp(`${keyword}( |&nbsp;)`, "g");
+      if (regexp.test(value)) {
+        textbox.innerHTML = value.replace(keyword, text);
+      }
+    });
+}
 function toggleEvent(el: TextField) {
   const handler = inputEventHandler(el);
   el.removeEventListener("input", handler);
@@ -38,12 +50,21 @@ function toggleEvent(el: TextField) {
 }
 
 const body = document.querySelector("body")!;
-const config = { attributes: true, childList: true, subtree: true };
+const config = {
+  childList: true,
+  subtree: true,
+  attributeFilter: ["type", "role", "placeholder", "aria-multiline"],
+};
 const callback = () => {
+  console.count("Callback");
   const textareas = document.querySelectorAll("textarea");
   const inputs = document.querySelectorAll("input");
+  const textboxes = document.querySelectorAll(
+    "[role='textbox']"
+  ) as NodeListOf<HTMLElement>;
   textareas.forEach(toggleEvent);
   inputs.forEach(toggleEvent);
+  textboxes.forEach(textboxHandler);
 };
 const observer = new MutationObserver(callback);
 observer.observe(body, config);
